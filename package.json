@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "biome check .",
+    "test": "jest --runInBand",
+    "test:types": "tsc -p tsconfig.test.json",
     "preview": "vite preview"
   },
   "dependencies": {
