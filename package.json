@@ -18,11 +18,18 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.10",
+    "@swc/jest": "^0.2.39",
     "@tailwindcss/vite": "^4.1.18",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.12",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
+    "jest": "^30.5.2",
+    "jest-environment-jsdom": "^30.5.2",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3",
     "vite": "npm:rolldown-vite@7.2.5"
