@@ -1,51 +1,26 @@
-import type { RegisterOptions } from 'react-hook-form';
-import type { FormValues } from './form-store';
+import type { Resolver } from 'react-hook-form';
+import { fieldLabels, minimumUsernameLength, steps } from './form-config';
+import type { FormFieldName, FormValues } from './form-values';
 
-type Rules = {
-  [Name in keyof FormValues]: RegisterOptions<FormValues, Name>;
-};
-
-function required(label: string) {
-  return (value: string) => value.trim().length > 0 || `${label} is required`;
-}
-
-export const validationRules: Rules = {
-  username: {
-    validate: {
-      required: required('Username'),
-      minLength: (value) =>
-        value.trim().length >= 3 || 'Username must be at least 3 characters',
-    },
-  },
-  about: { validate: required('About') },
-  'first-name': { validate: required('First name') },
-  'last-name': { validate: required('Last name') },
-  email: {
-    validate: {
-      required: required('Email address'),
-      format: (value) =>
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()) ||
-        'Enter a valid email address',
-    },
-  },
-  country: { validate: required('Country') },
-  'street-address': { validate: required('Street address') },
-  city: { validate: required('City') },
-  region: { validate: required('State / Province') },
-  'postal-code': { validate: required('ZIP / Postal code') },
-};
-
-export function validationError(name: keyof FormValues, value: string) {
-  const validate = validationRules[name].validate;
-  if (typeof validate === 'function') {
-    const result = validate(value, {} as FormValues);
-    return typeof result === 'string' ? result : undefined;
+function validationError(name: FormFieldName, value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return `${fieldLabels[name]} is required`;
+  if (name === 'username' && trimmed.length < minimumUsernameLength) {
+    return `${fieldLabels[name]} must be at least ${minimumUsernameLength} characters`;
   }
-  if (validate && typeof validate === 'object') {
-    for (const check of Object.values(validate)) {
-      const result = check(value, {} as FormValues);
-      if (typeof result === 'string') return result;
-    }
+  if (name === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    return 'Enter a valid email address';
   }
   return undefined;
 }
+
+export const formResolver: Resolver<FormValues> = async (values) => {
+  const errors: Record<string, { type: string; message: string }> = {};
+  for (const { fields } of steps) {
+    for (const name of fields) {
+      const message = validationError(name, values[name]);
+      if (message) errors[name] = { type: 'validate', message };
+    }
+  }
+  return { values: Object.keys(errors).length ? {} : values, errors };
+};

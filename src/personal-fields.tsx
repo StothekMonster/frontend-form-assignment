@@ -7,7 +7,7 @@ export function PersonalFields() {
   return (
     <div className={grid}>
       <div className="sm:col-span-3">
-        <FormField name="first-name" label="First name">
+        <FormField name="first-name">
           {(control) => (
             <Input
               id="first-name"
@@ -19,7 +19,7 @@ export function PersonalFields() {
         </FormField>
       </div>
       <div className="sm:col-span-3">
-        <FormField name="last-name" label="Last name">
+        <FormField name="last-name">
           {(control) => (
             <Input
               id="last-name"
@@ -31,7 +31,7 @@ export function PersonalFields() {
         </FormField>
       </div>
       <div className="sm:col-span-4">
-        <FormField name="email" label="Email address">
+        <FormField name="email">
           {(control) => (
             <Input id="email" type="email" autoComplete="email" {...control} />
           )}

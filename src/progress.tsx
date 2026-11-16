@@ -1,12 +1,12 @@
 import { CheckIcon } from '@heroicons/react/24/solid';
 
-const steps = ['Profile', 'Personal information', 'Address'];
+import { steps } from './form-config';
 
 export function Progress({ currentStep }: { currentStep: number }) {
   return (
     <nav aria-label="Progress">
       <ol className="divide-y divide-gray-300 rounded-md border border-gray-300 md:flex md:divide-y-0 dark:divide-white/15 dark:border-white/15">
-        {steps.map((name, index) => {
+        {steps.map(({ name }, index) => {
           const complete = index < currentStep;
           const current = index === currentStep;
           return (

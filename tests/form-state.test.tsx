@@ -1,50 +1,13 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../src/app';
-import {
-  createAppStore,
-  type FormFieldName,
-  type FormValues,
-  initialFormValues,
-  setField,
-} from '../src/form-store';
+import { steps } from '../src/form-config';
+import { initialFormValues } from '../src/form-values';
 
-const completedValues: FormValues = {
-  username: 'janesmith',
-  about: 'I enjoy building accessible interfaces.',
-  'first-name': 'Jane',
-  'last-name': 'Smith',
-  email: 'jane@example.com',
-  country: 'Canada',
-  'street-address': '123 Main Street',
-  city: 'Toronto',
-  region: 'Ontario',
-  'postal-code': 'M5V 2T6',
-};
-
-test('Redux initializes and stores all ten form fields', () => {
-  const store = createAppStore();
-  expect(store.getState().form.values).toEqual(initialFormValues);
-
-  for (const [name, value] of Object.entries(completedValues)) {
-    store.dispatch(setField({ name: name as FormFieldName, value }));
-  }
-
-  expect(store.getState().form.values).toEqual(completedValues);
-});
-
-test('typing in Profile updates the Redux form values', async () => {
-  const store = createAppStore();
-  const user = userEvent.setup();
-  render(<App store={store} />);
-
-  await user.type(screen.getByLabelText('Username'), completedValues.username);
-  await user.type(screen.getByLabelText('About'), completedValues.about);
-
-  expect(store.getState().form.values).toMatchObject({
-    username: completedValues.username,
-    about: completedValues.about,
-  });
+test('the form defines all ten fields across three steps', () => {
+  expect(steps.flatMap((step) => step.fields)).toEqual(
+    Object.keys(initialFormValues),
+  );
 });
 
 test('React Hook Form reports Profile errors on blur', async () => {

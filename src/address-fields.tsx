@@ -1,5 +1,6 @@
 import { Input } from './components/input';
 import { Select } from './components/select';
+import { countries } from './form-config';
 import { FormField } from './form-fields';
 
 const grid = 'grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6';
@@ -8,19 +9,19 @@ export function AddressFields() {
   return (
     <div className={grid}>
       <div className="sm:col-span-3">
-        <FormField name="country" label="Country">
+        <FormField name="country">
           {(control) => (
             <Select id="country" autoComplete="country-name" {...control}>
               <option value="">Choose a country</option>
-              <option>United States</option>
-              <option>Canada</option>
-              <option>Mexico</option>
+              {countries.map((country) => (
+                <option key={country}>{country}</option>
+              ))}
             </Select>
           )}
         </FormField>
       </div>
       <div className="col-span-full">
-        <FormField name="street-address" label="Street address">
+        <FormField name="street-address">
           {(control) => (
             <Input
               id="street-address"
@@ -32,7 +33,7 @@ export function AddressFields() {
         </FormField>
       </div>
       <div className="sm:col-span-2 sm:col-start-1">
-        <FormField name="city" label="City">
+        <FormField name="city">
           {(control) => (
             <Input
               id="city"
@@ -44,7 +45,7 @@ export function AddressFields() {
         </FormField>
       </div>
       <div className="sm:col-span-2">
-        <FormField name="region" label="State / Province">
+        <FormField name="region">
           {(control) => (
             <Input
               id="region"
@@ -56,7 +57,7 @@ export function AddressFields() {
         </FormField>
       </div>
       <div className="sm:col-span-2">
-        <FormField name="postal-code" label="ZIP / Postal code">
+        <FormField name="postal-code">
           {(control) => (
             <Input
               id="postal-code"

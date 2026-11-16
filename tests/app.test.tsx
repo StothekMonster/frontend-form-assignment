@@ -1,7 +1,7 @@
-import { act, render, screen, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../src/app';
-import { createAppStore, setField } from '../src/form-store';
+import { formResolver } from '../src/form-validation';
 
 const formData = {
   username: 'janesmith',
@@ -325,22 +325,13 @@ describe('multi-step form', () => {
     }
   });
 
-  test('checks earlier step values again before final submission', async () => {
-    const store = createAppStore();
-    const user = userEvent.setup();
-    render(<App store={store} />);
-    await goToAddress(user);
-    await fillAddress(user);
-    act(() => store.dispatch(setField({ name: 'username', value: 'ab' })));
-    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
-
-    try {
-      await user.click(screen.getByRole('button', { name: 'Submit' }));
-      expect(log).not.toHaveBeenCalled();
-      expectInlineError('Username', /3.*character|character.*3/i);
-      expectProgress(['current', 'upcoming', 'upcoming']);
-    } finally {
-      log.mockRestore();
-    }
+  test('final validation includes fields from earlier steps', async () => {
+    const result = await formResolver(
+      { ...formData, username: 'ab' },
+      {},
+      { fields: {}, shouldUseNativeValidation: false },
+    );
+    expect(result.errors.username?.message).toMatch(/at least 3 characters/i);
+    expect(result.values).toEqual({});
   });
 });

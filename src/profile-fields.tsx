@@ -9,7 +9,7 @@ export function ProfileFields() {
   return (
     <div className={grid}>
       <div className="sm:col-span-4">
-        <FormField name="username" label="Username">
+        <FormField name="username">
           {(control) => (
             <Input
               id="username"
@@ -21,7 +21,7 @@ export function ProfileFields() {
         </FormField>
       </div>
       <div className="col-span-full">
-        <FormField name="about" label="About">
+        <FormField name="about">
           {(control) => (
             <>
               <Textarea id="about" rows={3} {...control} />
