@@ -1,6 +1,7 @@
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../src/app';
+import { createAppStore, setField } from '../src/form-store';
 
 const formData = {
   username: 'janesmith',
@@ -61,7 +62,9 @@ function expectInlineError(label: string, message: RegExp) {
   const field = control.closest('[data-slot="control"]')?.parentElement;
 
   expect(field).toBeTruthy();
-  expect(within(field as HTMLElement).getByText(message)).toBeVisible();
+  const error = field?.querySelector('[data-slot="error"]');
+  expect(error).toBeVisible();
+  expect(error).toHaveTextContent(message);
   expect(control).toHaveAttribute('data-invalid');
 }
 
@@ -317,6 +320,25 @@ describe('multi-step form', () => {
       await user.click(screen.getByRole('button', { name: 'Submit' }));
       expect(log).toHaveBeenCalledTimes(1);
       expect(log).toHaveBeenCalledWith(formData);
+    } finally {
+      log.mockRestore();
+    }
+  });
+
+  test('checks earlier step values again before final submission', async () => {
+    const store = createAppStore();
+    const user = userEvent.setup();
+    render(<App store={store} />);
+    await goToAddress(user);
+    await fillAddress(user);
+    act(() => store.dispatch(setField({ name: 'username', value: 'ab' })));
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    try {
+      await user.click(screen.getByRole('button', { name: 'Submit' }));
+      expect(log).not.toHaveBeenCalled();
+      expectInlineError('Username', /3.*character|character.*3/i);
+      expectProgress(['current', 'upcoming', 'upcoming']);
     } finally {
       log.mockRestore();
     }
